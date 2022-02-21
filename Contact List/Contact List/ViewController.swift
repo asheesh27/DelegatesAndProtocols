@@ -11,7 +11,8 @@ class ViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
     
-    let contacts = [["zachary","+044 5078953"],["thampaan","+91 7849302348"],["hussain","+891 983239492"],["yudhistir","+011 2255"],["anaswara","+484 6784573"],["giselle","+982345682398"],["cleopatra","0478 2342341"],["shanmughan","443 57842934"],["nelsona","+91 9002300492"]]
+    var contacts = [["zachary","+044 5078953"],["thampaan","+91 7849302348"],["hussain","+891 983239492"],["yudhistir","+011 2255"],["anaswara","+484 6784573"],["giselle","+982345682398"],["cleopatra","0478 2342341"],["shanmughan","443 57842934"],["nelsona","+91 9002300492"]]
+    var imageList = ["zachary","thampaan","hussain","yudhistir","anaswara","giselle","cleopatra","shanmughan","nelsona"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -19,8 +20,6 @@ class ViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
     }
-
-
 }
 
 extension ViewController : UITableViewDelegate, UITableViewDataSource{
@@ -30,8 +29,11 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let vc = storyboard?.instantiateViewController(withIdentifier: "ContactViewController") as! ContactViewController?{
-            vc.img = UIImage(named: contacts[indexPath.row][0])!
+            vc.img = UIImage(named: imageList[indexPath.row])!
             vc.name = contacts[indexPath.row][0].capitalized
+            vc.number = contacts[indexPath.row][1]
+            vc.order = indexPath.row
+            vc.editingDelegate = self
             self.navigationController?.pushViewController(vc, animated: true)
         }
     }
@@ -42,10 +44,19 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "contactCell") as! ContactCell
         let contact = contacts[indexPath.row][0]
-        cell.contactImage.image = UIImage(named: contact)
+        cell.contactImage.image = UIImage(named: imageList[indexPath.row])
         cell.ContactName.text = contact.capitalized
         cell.contactNumber.text = contacts[indexPath.row][1]
         return cell
+    }
+}
+
+extension ViewController : detailsChangeDelegate{
+    func didTapSave(name: String, number: String, order: Int) {
+        contacts[order][0] = name
+        contacts[order][1] = number
+        print(contacts)
+        tableView.reloadData()
     }
     
     
